@@ -1,5 +1,8 @@
+import { getArgs } from "./helpers/args.ts";
+
 const initCLI = () => {
-	console.log(Deno.args);
+  const args = getArgs();
+  console.log(args);
 };
 
 initCLI();
