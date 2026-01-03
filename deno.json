@@ -1,5 +1,9 @@
 {
 	"name": "My Deno app",
-	"exports": "./main.ts",
+	"exports": "./weather.ts",
+	"main": "weather.ts",
+	"bin": {
+		"weather": "weather.ts"
+	},
 	"version": "0.0.1"
 }
