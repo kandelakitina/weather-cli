@@ -1,17 +1,20 @@
 import os from "node:os";
 import * as path from "@std/path";
-import { exists } from "@std/fs";
 
 const filepath = path.join(os.homedir(), "weather-data.json");
 
 type Data = Record<string, string>;
 
 const readData = async (): Promise<Data> => {
-  if (!await exists(filepath)) {
-    return {};
+  try {
+    const file = await Deno.readTextFile(filepath);
+    return JSON.parse(file) as Data;
+  } catch (err) {
+    if (err instanceof Deno.errors.NotFound) {
+      return {};
+    }
+    throw err;
   }
-  const file = await Deno.readTextFile(filepath);
-  return JSON.parse(file) as Data;
 };
 
 const getKeyValue = async (key: string): Promise<string | undefined> => {
