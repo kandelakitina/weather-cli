@@ -2,7 +2,6 @@ import os from "node:os";
 import * as path from "@std/path";
 import { exists } from "@std/fs";
 
-// Requires --allow-sys permission
 const filepath = path.join(os.homedir(), "weather-data.json");
 
 type Data = Record<string, string>;
@@ -15,24 +14,15 @@ const readData = async (): Promise<Data> => {
   return JSON.parse(file) as Data;
 };
 
-const getKeyValue = async (
-  key: string,
-): Promise<string | undefined> => {
+const getKeyValue = async (key: string): Promise<string | undefined> => {
   const data = await readData();
   return data[key];
 };
 
-const saveKeyValue = async (
-  key: string,
-  value: string,
-): Promise<void> => {
+const saveKeyValue = async (key: string, value: string): Promise<void> => {
   const data = await readData();
   data[key] = value;
-
-  await Deno.writeTextFile(
-    filepath,
-    JSON.stringify(data, null, 2),
-  );
+  await Deno.writeTextFile(filepath, JSON.stringify(data, null, 2));
 };
 
 export { getKeyValue, saveKeyValue };
