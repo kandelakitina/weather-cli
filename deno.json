@@ -15,9 +15,9 @@
 	},
 	"permissions": {
 		"default": {
-			"read": true,
-			"write": true,
-			"sys": true,
+			"read": [".", "$HOME/weather-data.json"],
+			"write": ["$HOME/weather-data.json"],
+			"sys": ["homedir", "osRelease"],
 			"net": ["geocoding-api.open-meteo.com", "api.openweathermap.org"]
 		}
 	}
