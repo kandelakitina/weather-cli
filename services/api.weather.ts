@@ -33,6 +33,10 @@ export async function getWeatherByCity(
     token?: string;
   },
 ): Promise<WeatherResult> {
+  if (!options?.token) {
+    throw new Error("OpenWeatherMap API token is required");
+  }
+
   // token is reserved for future authenticated APIs
   const location = await resolveCity(city, {
     language: options?.language,
@@ -43,7 +47,7 @@ export async function getWeatherByCity(
     location.latitude,
     location.longitude,
     options?.timezone,
-    options?.token,
+    options.token,
   );
 
   return {
@@ -79,7 +83,7 @@ async function fetchCurrentWeather(
   latitude: number,
   longitude: number,
   timezone = "auto",
-  token?: string,
+  token: string,
 ): Promise<{
   temperature: number;
   windspeed: number;
@@ -87,6 +91,10 @@ async function fetchCurrentWeather(
   weathercode: number;
   time: string;
 }> {
+  if (!token) {
+    throw new Error("OpenWeatherMap API token is required");
+  }
+
   const params = new URLSearchParams({
     lat: String(latitude),
     lon: String(longitude),
@@ -95,9 +103,7 @@ async function fetchCurrentWeather(
   });
 
   // token is required for OpenWeatherMap API
-  if (token) {
-    params.set("appid", token);
-  }
+  params.set("appid", token);
 
   const res = await fetch(`${FORECAST_API}?${params}`);
   if (!res.ok) {
@@ -111,11 +117,12 @@ async function fetchCurrentWeather(
   }
 
   const current = data.current;
+  const weathercode = Array.isArray(current.weather) && current.weather.length > 0 ? current.weather[0].id : 0;
   return {
     temperature: current.temp,
     windspeed: current.wind_speed,
     winddirection: current.wind_deg,
-    weathercode: current.weather[0].id,
+    weathercode,
     time: new Date(current.dt * 1000).toISOString(),
   };
 }

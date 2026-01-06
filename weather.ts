@@ -30,7 +30,8 @@ const fetchWeather = async (city: string, token: string) => {
   }
 
   try {
-    printSuccess(`Using token: ${token}`);
+    const maskedToken = token.length >= 8 ? `${token.slice(0, 4)}...${token.slice(-4)}` : '****';
+    printSuccess(`Using token: ${maskedToken}`);
 
     const weather = await getWeatherByCity(city, { token });
 
