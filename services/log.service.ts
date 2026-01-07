@@ -2,11 +2,11 @@ import { cyan, green, red } from "@std/fmt/colors";
 import { dedent } from "@std/text/unstable-dedent";
 
 const printError = (error: string) => {
-  console.log(red(`Error received: ${error}`));
+  console.log(red(`${error}`));
 };
 
 const printSuccess = (message: string) => {
-  console.log(green(`Message received: ${message}`));
+  console.log(green(`${message}`));
 };
 
 const printHelp = () => {
