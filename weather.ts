@@ -51,7 +51,6 @@ const showWeather = async (city: string) => {
     const weather = await fetchWeather(city);
 
     const output = dedent`
-      Weather for ${city}:
       Temperature: ${weather.temperature}°C
       Local Time: ${weather.time}
     `;
