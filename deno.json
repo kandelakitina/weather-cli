@@ -18,7 +18,7 @@
 			"read": true,
 			"write": true,
 			"sys": true,
-			"net": ["geocoding-api.open-meteo.com", "api.openweathermap.org"]
+			"net": ["geocoding-api.open-meteo.com", "api.open-meteo.com"]
 		}
 	}
 }

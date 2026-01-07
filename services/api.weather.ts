@@ -2,7 +2,7 @@
 
 import { type GeoLocation, getTopLocation } from "./api.geocoding.ts";
 
-const FORECAST_API = "https://api.openweathermap.org/data/3.0/onecall";
+const FORECAST_API = "https://api.open-meteo.com/v1/forecast";
 
 /* -----------------------------
    Types
@@ -30,14 +30,8 @@ export async function getWeatherByCity(
     language?: string;
     countryCode?: string;
     timezone?: string;
-    token?: string;
   },
 ): Promise<WeatherResult> {
-  if (!options?.token) {
-    throw new Error("OpenWeatherMap API token is required");
-  }
-
-  // token is reserved for future authenticated APIs
   const location = await resolveCity(city, {
     language: options?.language,
     countryCode: options?.countryCode,
@@ -47,7 +41,6 @@ export async function getWeatherByCity(
     location.latitude,
     location.longitude,
     options?.timezone,
-    options.token,
   );
 
   return {
@@ -83,7 +76,6 @@ async function fetchCurrentWeather(
   latitude: number,
   longitude: number,
   timezone = "auto",
-  token: string,
 ): Promise<{
   temperature: number;
   windspeed: number;
@@ -91,19 +83,12 @@ async function fetchCurrentWeather(
   weathercode: number;
   time: string;
 }> {
-  if (!token) {
-    throw new Error("OpenWeatherMap API token is required");
-  }
-
   const params = new URLSearchParams({
-    lat: String(latitude),
-    lon: String(longitude),
-    units: "metric",
-    exclude: "minutely,hourly,daily,alerts",
+    latitude: String(latitude),
+    longitude: String(longitude),
+    current: "temperature_2m,wind_speed_10m,wind_direction_10m,weather_code",
+    timezone,
   });
-
-  // token is required for OpenWeatherMap API
-  params.set("appid", token);
 
   const res = await fetch(`${FORECAST_API}?${params}`);
   if (!res.ok) {
@@ -117,12 +102,11 @@ async function fetchCurrentWeather(
   }
 
   const current = data.current;
-  const weathercode = Array.isArray(current.weather) && current.weather.length > 0 ? current.weather[0].id : 0;
   return {
-    temperature: current.temp,
-    windspeed: current.wind_speed,
-    winddirection: current.wind_deg,
-    weathercode,
-    time: new Date(current.dt * 1000).toISOString(),
+    temperature: current.temperature_2m,
+    windspeed: current.wind_speed_10m,
+    winddirection: current.wind_direction_10m,
+    weathercode: current.weather_code,
+    time: data.current.time,
   };
 }

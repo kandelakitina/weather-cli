@@ -14,7 +14,6 @@ const printHelp = () => {
     No params - shows weather
     -s [city] Sets city
     -h Shows help
-    -t [API_KEY] Sets open-weather API key
     `);
 };
 
