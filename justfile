@@ -1,6 +1,4 @@
-# Justfile for nodejs
-
 set shell := ["fish", "-c"]
 
-dev:
-    deno run --watch main.ts
+dev *args:
+    deno run dev {{args}}
