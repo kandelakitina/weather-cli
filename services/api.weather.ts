@@ -7,6 +7,13 @@ export interface WeatherResult {
   time: string; // city-local HH:MM
 }
 
+/**
+ * Format a city's local time as "HH:MM" from a UTC timestamp and timezone offset.
+ *
+ * @param utcSeconds - Seconds since Unix epoch in UTC.
+ * @param timezoneOffsetSeconds - Number of seconds to add to UTC to obtain the local time (positive east of UTC, negative west).
+ * @returns The city-local time formatted as `HH:MM` (24-hour, zero-padded).
+ */
 function formatCityLocalTime(
   utcSeconds: number,
   timezoneOffsetSeconds: number,
@@ -20,6 +27,16 @@ function formatCityLocalTime(
   return `${hours}:${minutes}`;
 }
 
+/**
+ * Fetches current weather for the given geographic coordinates and returns the temperature and city-local time.
+ *
+ * @param latitude - Latitude in decimal degrees
+ * @param longitude - Longitude in decimal degrees
+ * @param token - OpenWeatherMap API key
+ * @returns An object with `temperature` in degrees Celsius and `time` as city-local "HH:MM"
+ * @throws Error when the HTTP request fails (includes status code)
+ * @throws Error when the response does not contain expected weather data
+ */
 export async function getWeather(
   latitude: number,
   longitude: number,

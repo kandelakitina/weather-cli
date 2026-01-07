@@ -9,6 +9,13 @@ export interface CityLocation {
   country?: string;
 }
 
+/**
+ * Looks up a city's geographic location by name using the Open-Meteo geocoding API.
+ *
+ * @param name - The city or place name to search for; must be non-empty.
+ * @returns The first matching CityLocation if found, `undefined` if no results.
+ * @throws Error if `name` is missing or empty, or if the geocoding API responds with a non-OK status.
+ */
 export async function getCityLocation(
   name: string,
 ): Promise<CityLocation | undefined> {
