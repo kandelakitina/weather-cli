@@ -1,17 +1,12 @@
 import { getArgs } from "./helpers/args.ts";
 import { printError, printHelp, printSuccess } from "./services/log.service.ts";
 import { getWeatherByCity } from "./services/api.weather.ts";
-import { getKeyValue, saveKeyValue } from "./services/storage.service.ts";
+import { getKeyValue, saveKeyValue, getCities, saveCities } from "./services/storage.service.ts";
 
 /* -----------------------------
    Fetch weather helper
 -------------------------------- */
-const fetchWeather = async () => {
-  const city = await getKeyValue("city");
-  if (!city) {
-    throw new Error("City is undefined");
-  }
-
+const fetchWeatherForCity = async (city: string) => {
   try {
     const weather = await getWeatherByCity(city);
 
@@ -29,11 +24,17 @@ const fetchWeather = async () => {
   }
 };
 
+const fetchWeatherForAll = async (cities: string[]) => {
+  for (const city of cities) {
+    await fetchWeatherForCity(city);
+  }
+};
+
 /* -----------------------------
    CLI Entry point
 -------------------------------- */
 const initCLI = async () => {
-  const { s: city, h: help, l: language } = getArgs(Deno.args);
+  const { s: cities, h: help, l: language } = getArgs(Deno.args);
 
   if (help) {
     printHelp();
@@ -44,11 +45,24 @@ const initCLI = async () => {
     await saveKeyValue("language", language);
   }
 
-  if (city) {
-    await saveKeyValue("city", city);
-    await fetchWeather();
+  if (cities && cities.length > 0) {
+    const currentCities = await getCities();
+    for (const city of cities) {
+      if (!currentCities.includes(city)) {
+        currentCities.push(city);
+      }
+    }
+    await saveCities(currentCities);
+    await fetchWeatherForAll(cities);
   } else {
-    printError("Please provide a city with -s, or use -h for help.");
+    const savedCities = await getCities();
+    if (savedCities.length > 1) {
+      await fetchWeatherForAll(savedCities.slice(0, 5));
+    } else if (savedCities.length === 1) {
+      await fetchWeatherForCity(savedCities[0]);
+    } else {
+      printError("No cities saved. Please provide a city with -s, or use -h for help.");
+    }
   }
 };
 
